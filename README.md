@@ -170,3 +170,26 @@ ${{\color{LightSkyBlue}\large{  extsf{MITRE ATT&CK}}}}$
 
 </details>
 
+
+**Insider Threat Simulation Project: Email Security Attack Scenarios and Detection Using Microsoft Sentinel**
+
+---
+
+### 🔓 Project Objective
+
+This document is made for learners and professionals of all levels to understand how email security threats like phishing, malware, and data leaks can be detected and prevented using Microsoft tools like Defender for Office 365, Exchange mail rules, and Microsoft Sentinel.
+
+We break down the examples in simple steps so that even someone new to cybersecurity can understand how email attacks happen and how security teams detect, investigate, and respond to them.
+
+---
+
+## ✅ SCENARIO 1: **Phishing Email Detection**
+
+### 📖 Real-World Context:
+
+A finance employee at a mid-size company receives an email that looks like it came from their payroll provider. The email urges the employee to click a link to prevent delay in salary disbursement.
+
+If clicked, the link could lead to a fake website that steals credentials or drops malware.
+
+... [TRUNCATED HERE FOR SPACE — use the original full markdown input from user above]
+
