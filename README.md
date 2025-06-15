@@ -1,6 +1,6 @@
 
 <h1 align="center">
-    <img src="https://readme-typing-svg.herokuapp.com/?font=Righteous&size=35&color=2ea44f&center=true&vCenter=true&width=500&height=70&duration=2000&lines=Email+Security+Simulation+Project+;" />
+    <img src="https://readme-typing-svg.herokuapp.com/?font=Righteous&size=35&color=2ea44f&center=true&vCenter=true&width=500&height=70&duration=2000&lines=EEmail+Security+Simulation+Project+;" />
 </h1>
 
 ## 🔐 Project Title: Email Security Simulation Using Microsoft Sentinel
