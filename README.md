@@ -183,4 +183,199 @@ This simulation set helps SOC analysts understand and test:
 - Real SOC playbook steps
 - MITRE coverage and incident response actions
 
-Build your GitHub projects with these scenarios to stand out.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<h1 align="center">
+    <img src="https://readme-typing-svg.herokuapp.com/?font=Righteous&size=35&color=2ea44f&center=true&vCenter=true&width=800&height=70&duration=3000&lines=Email+Security+Detection+Simulation+Project" />
+</h1>
+
+---
+
+# 🔐 Insider Threat Simulation Project: Email Security Attack Scenarios and Detection Using Microsoft Sentinel
+
+This project helps analysts simulate and detect email-based cyberattacks like phishing, spoofing, DLP violations, and malware attachments using Microsoft Defender, Sentinel, Exchange, and Purview.
+
+The content is written to be understood by beginners (including students) and useful to professionals building blue team portfolios.
+
+---
+
+<details>
+<summary><strong>✅ Scenario 1: Phishing Email Detection</strong></summary>
+
+### 📖 Real-World Scenario:
+A fake HR alert is received by the finance team, urging urgent verification of payroll. If clicked, it redirects users to a phishing site that steals credentials.
+
+---
+
+### ❌ Red Flags:
+
+- External spoofed domain
+- Urgency (salary delay)
+- Fake link
+- Spoofed HR impersonation
+
+---
+
+### 👨‍💻 Analyst Action:
+
+1. **Create file** `phishing_alert.log`
+
+```
+Timestamp | AlertType | Subject | Recipient | SenderFromAddress | ThreatType
+2025-06-15 11:14:33 | ALERT | Urgent: Action Required to Release Salary | finance_dept@company.com | hr-support@payroll-verify-alert.com | URL Phishing
+2025-06-15 11:15:00 | INFO | Payroll Verification Update | john.smith@company.com | noreply@trustedhr.com | Clean
+2025-06-15 11:16:12 | ALERT | Your Action Needed Today | kate.james@company.com | helpdesk@secure-hr.net | URL Phishing
+```
+
+2. **Upload to VM:**  
+`C:\SecurityLogs\phishing_alert.log`
+
+3. **Create DCR in Sentinel:**  
+Microsoft Sentinel > Data Connectors > Custom Logs  
+Table name: `PhishingLog_CL`
+
+---
+
+### 📊 Dummy Detection Table
+
+| Timestamp           | AlertType | Subject                             | Recipient               | SenderFromAddress                   | ThreatType     |
+|---------------------|-----------|--------------------------------------|--------------------------|--------------------------------------|----------------|
+| 2025-06-15 11:14:33 | ALERT     | Urgent: Action Required to Release Salary | finance_dept@company.com | hr-support@payroll-verify-alert.com | URL Phishing   |
+| 2025-06-15 11:16:12 | ALERT     | Your Action Needed Today             | kate.james@company.com   | helpdesk@secure-hr.net              | URL Phishing   |
+
+---
+
+### 💬 KQL Detection:
+
+```kql
+PhishingLog_CL
+| where AlertType == "ALERT"
+| where Subject has_any("Urgent", "Action", "Suspension")
+| extend DomainCheck = iif(SenderFromAddress endswith "@company.com", "Trusted", "Suspicious")
+| project TimeGenerated=Timestamp, Recipient, SenderFromAddress, Subject, DomainCheck, ThreatType
+```
+
+---
+
+### 🔍 Analyst View:
+- Query shows risky emails
+- Highlights untrusted senders
+- Flags keywords like *Urgent*, *Action*
+
+---
+
+### 🧠 MITRE ATT&CK Mapping
+
+- T1566.001: Spearphishing via Service
+- T1585.001: Email Spoofing
+
+---
+
+### 🛡️ Prevention Techniques
+
+- Safe Links (Defender)
+- Anti-phishing policies
+- SPF, DKIM, DMARC setup
+
+---
+
+### 🧯 Incident Response
+
+- Tier 1 tags phishing alert
+- Tier 2 isolates user device
+- Sandbox test of link
+- Transport rule updated
+- IOC reported
+
+</details>
+
+---
+
+<details>
+<summary><strong>✅ Scenario 2: DLP Violation on Email Attachments</strong></summary>
+
+### 📖 Real-World Scenario:
+An employee mistakenly shares SSNs and card details to an external vendor via Excel file.
+
+---
+
+### ❌ Red Flags
+
+- Sensitive data (SSNs, credit cards)
+- External domain
+- No encryption
+- Violates DLP policy
+
+---
+
+### 👨‍💻 Analyst Action:
+
+1. Create `dlp_email_log.log`
+
+```
+Timestamp | Sender | Recipient | AttachmentName | DataTypeDetected | PolicyViolated
+2025-06-16 09:12:45 | maria.lopez@company.com | external_vendor@partners.com | client_records.xlsx | SSN, Credit Card Number | External Email with PII
+```
+
+2. Upload to: `C:\SecurityLogs\dlp_email_log.log`  
+3. Create DCR → `DLPLog_CL`
+
+---
+
+### 💬 KQL Detection
+
+```kql
+DLPLog_CL
+| where DataTypeDetected has_any("SSN", "Credit Card")
+| where Recipient !endswith "@company.com"
+| extend SenderDomain = extract("@(.*)", 1, Sender)
+| project Timestamp, Sender, SenderDomain, Recipient, DataTypeDetected, PolicyViolated
+```
+
+---
+
+### 🧠 MITRE ATT&CK Mapping
+
+- T1041: Exfiltration Over C2
+- T1081: Credentials in Files
+
+---
+
+### 🛡️ Prevention Techniques
+
+- Purview DLP block rules
+- Auto-labeling PII
+- Education
+
+---
+
+### 🧯 Incident Response
+
+- Alert to Sentinel
+- SOC validates intent
+- HR/legal looped in
+- Domain blocked
+
+</details>
+
+---
+
+More scenarios can be added (e.g., spoofing, email firewall rules).  
+This README can be previewed properly in GitHub markdown renderers.
+
+
