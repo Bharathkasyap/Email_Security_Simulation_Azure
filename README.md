@@ -130,12 +130,6 @@ Timestamp | Sender | Recipient | AttachmentName | DataTypeDetected | PolicyViola
 2025-06-16 09:12:45 | maria.lopez@company.com | external_vendor@partners.com | client_records.xlsx | SSN, Credit Card Number | External Email with PII 
 ```
 
-
-```
-Timestamp | Sender | Recipient | AttachmentName | FileType | ThreatDetected | ActionTaken  
-2025-06-16 10:10:12 | billing@invoiceportal.net | danielle.watson@company.com | Invoice.docm | macro-enabled | TrojanDownloader | Quarantined  
-```
-
 2. Upload to VM: `C:\SecurityLogs\dlp_alert.log`
 3. Create DCR using Sentinel > Data Connectors > Custom Logs  
 4. Log Table: `DLPLog_CL`
