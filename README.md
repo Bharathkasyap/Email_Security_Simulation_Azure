@@ -182,11 +182,41 @@ EmailHeaderLog_CL
 | where DMARCResult == "None" or DKIMResult == "None"
 | project Timestamp, Sender, Recipient, Subject, SPFResult, DKIMResult, DMARCResult
 ```
+---
+
+### 📊 Dummy Detection Table
+
+| Timestamp           | AlertType | Subject                             | Recipient               | SenderFromAddress                   | ThreatType     |
+|---------------------|-----------|--------------------------------------|--------------------------|--------------------------------------|----------------|
+| 2025-06-15 11:14:33 | ALERT     | Urgent: Action Required to Release Salary | finance_dept@company.com | hr-support@payroll-verify-alert.com | URL Phishing   |
+| 2025-06-15 11:16:12 | ALERT     | Your Action Needed Today             | kate.james@company.com   | helpdesk@secure-hr.net              | URL Phishing   |
+
+---
 
 ### 🛡️ Prevention:
 - Add SPF DNS record with valid senders
 - Enable DKIM key signing
-- Setup DMARC policy to quarantine/reject
+- SPF, DKIM, DMARC setup policy to quarantine/reject
+- Anti-phishing policies
+
+</details>
+
+---
+
+### 🧠 MITRE ATT&CK Mapping
+
+- T1566.001: Spearphishing via Service
+- T1585.001: Email Spoofing
+
+---
+
+### 🧯 Incident Response
+
+- Tier 1 tags phishing alert
+- Tier 2 isolates user device
+- Sandbox test of link
+- Transport rule updated
+- IOC reported
 
 </details>
 
@@ -213,515 +243,458 @@ This simulation set helps SOC analysts understand and test:
 
 
 
-
-
-
 <h1 align="center">
-    <img src="https://readme-typing-svg.herokuapp.com/?font=Righteous&size=35&color=2ea44f&center=true&vCenter=true&width=800&height=70&duration=3000&lines=Email+Security+Detection+Simulation+Project" />
+    <img src="https://readme-typing-svg.herokuapp.com/?font=Righteous&size=35&color=4257f5&center=true&vCenter=true&width=500&height=70&duration=2000&lines=E/Email+Security+Simulation+Project;" />
 </h1>
 
----
+## 🔐 Project Title: Email Security Simulation Using Microsoft Sentinel
 
-# 🔐 Insider Threat Simulation Project: Email Security Attack Scenarios and Detection Using Microsoft Sentinel
-
-This project helps analysts simulate and detect email-based cyberattacks like phishing, spoofing, DLP violations, and malware attachments using Microsoft Defender, Sentinel, Exchange, and Purview.
-
-The content is written to be understood by beginners (including students) and useful to professionals building blue team portfolios.
+### 🔓 Project Objective
+This simulation showcases how common email threats are detected and mitigated using Microsoft Defender for Office 365, Exchange mail rules and Microsoft Sentinel. The goal is to demonstrate end-to-end visibility for analysts of all skill levels.
 
 ---
 
-<details>
-<summary><strong>✅ Scenario 1: Phishing Email Detection</strong></summary>
-
-### 📖 Real-World Scenario:
-A fake HR alert is received by the finance team, urging urgent verification of payroll. If clicked, it redirects users to a phishing site that steals credentials.
-
----
-
-### ❌ Red Flags:
-
-- External spoofed domain
-- Urgency (salary delay)
-- Fake link
-- Spoofed HR impersonation
+This document provides real-world, beginner-friendly simulations to understand how SOC analysts detect and respond to various email-based attacks using:
+- Microsoft Sentinel (SIEM)
+- Microsoft Defender for Office 365
+- Exchange Transport Rules (ETRs)
+- Microsoft Purview DLP
 
 ---
 
-### 👨‍💻 Analyst Action:
-
-1. **Create file** `phishing_alert.log`
-
-```
-Timestamp | AlertType | Subject | Recipient | SenderFromAddress | ThreatType
-2025-06-15 11:14:33 | ALERT | Urgent: Action Required to Release Salary | finance_dept@company.com | hr-support@payroll-verify-alert.com | URL Phishing
-2025-06-15 11:15:00 | INFO | Payroll Verification Update | john.smith@company.com | noreply@trustedhr.com | Clean
-2025-06-15 11:16:12 | ALERT | Your Action Needed Today | kate.james@company.com | helpdesk@secure-hr.net | URL Phishing
-```
-
-2. **Upload to VM:**  
-`C:\SecurityLogs\phishing_alert.log`
-
-3. **Create DCR in Sentinel:**  
-Microsoft Sentinel > Data Connectors > Custom Logs  
-Table name: `PhishingLog_CL`
-
----
-
-### 📊 Dummy Detection Table
-
-| Timestamp           | AlertType | Subject                             | Recipient               | SenderFromAddress                   | ThreatType     |
-|---------------------|-----------|--------------------------------------|--------------------------|--------------------------------------|----------------|
-| 2025-06-15 11:14:33 | ALERT     | Urgent: Action Required to Release Salary | finance_dept@company.com | hr-support@payroll-verify-alert.com | URL Phishing   |
-| 2025-06-15 11:16:12 | ALERT     | Your Action Needed Today             | kate.james@company.com   | helpdesk@secure-hr.net              | URL Phishing   |
-
----
-
-### 💬 KQL Detection:
-
-```kql
-PhishingLog_CL
-| where AlertType == "ALERT"
-| where Subject has_any("Urgent", "Action", "Suspension")
-| extend DomainCheck = iif(SenderFromAddress endswith "@company.com", "Trusted", "Suspicious")
-| project TimeGenerated=Timestamp, Recipient, SenderFromAddress, Subject, DomainCheck, ThreatType
-```
-
----
-
-### 🔍 Analyst View:
-- Query shows risky emails
-- Highlights untrusted senders
-- Flags keywords like *Urgent*, *Action*
-
----
-
-### 🧠 MITRE ATT&CK Mapping
-
-- T1566.001: Spearphishing via Service
-- T1585.001: Email Spoofing
-
----
-
-### 🛡️ Prevention Techniques
-
-- Safe Links (Defender)
-- Anti-phishing policies
-- SPF, DKIM, DMARC setup
-
----
-
-### 🧯 Incident Response
-
-- Tier 1 tags phishing alert
-- Tier 2 isolates user device
-- Sandbox test of link
-- Transport rule updated
-- IOC reported
-
-</details>
-
----
-
-<details>
-<summary><strong>✅ Scenario 2: DLP Violation on Email Attachments</strong></summary>
-
-### 📖 Real-World Scenario:
-An employee mistakenly shares SSNs and card details to an external vendor via Excel file.
-
----
-
-### ❌ Red Flags
-
-- Sensitive data (SSNs, credit cards)
-- External domain
-- No encryption
-- Violates DLP policy
-
----
-
-### 👨‍💻 Analyst Action:
-
-1. Create `dlp_email_log.log`
-
-```
-Timestamp | Sender | Recipient | AttachmentName | DataTypeDetected | PolicyViolated
-2025-06-16 09:12:45 | maria.lopez@company.com | external_vendor@partners.com | client_records.xlsx | SSN, Credit Card Number | External Email with PII
-```
-
-2. Upload to: `C:\SecurityLogs\dlp_email_log.log`  
-3. Create DCR → `DLPLog_CL`
-
----
-
-### 💬 KQL Detection
-
-```kql
-DLPLog_CL
-| where DataTypeDetected has_any("SSN", "Credit Card")
-| where Recipient !endswith "@company.com"
-| extend SenderDomain = extract("@(.*)", 1, Sender)
-| project Timestamp, Sender, SenderDomain, Recipient, DataTypeDetected, PolicyViolated
-```
-
----
-
-### 🧠 MITRE ATT&CK Mapping
-
-- T1041: Exfiltration Over C2
-- T1081: Credentials in Files
-
----
-
-### 🛡️ Prevention Techniques
-
-- Purview DLP block rules
-- Auto-labeling PII
-- Education
-
----
-
-### 🧯 Incident Response
-
-- Alert to Sentinel
-- SOC validates intent
-- HR/legal looped in
-- Domain blocked
-
-</details>
-
----
-
-More scenarios can be added (e.g., spoofing, email firewall rules).  
-This README can be previewed properly in GitHub markdown renderers.
-
-
-
-
-
-
-
-
-
-
-
-
-
-# 📧 Insider Threat Simulation Project: Email Security Attack Scenarios and Detection Using Microsoft Sentinel
-
----
-
-## 🔓 Project Objective
-
-This simulation is designed to help learners and analysts understand how email-based attacks like phishing, malware attachments, and data loss can be detected and managed using Microsoft tools like Microsoft Sentinel, Defender for Office 365, and Exchange Transport Rules.
-
-Each scenario explains:
-- How the attack looks to a regular employee
-- What red flags are seen
-- How logs are created and sent to Sentinel
-- KQL queries used for detection
-- What incident response is triggered
-- The MITRE ATT&CK mapping with external references
-
----
-
-## 🔔 How Analysts Receive Alerts in Real-World SOC
-
-When a detection rule in Microsoft Sentinel is triggered:
-
-- 🔔 **An alert is automatically generated** and shown in the "Incidents" pane of Sentinel
-- 📬 Optional: An email can be sent to SOC analysts if email notification rules are configured
-- 📲 Integration with platforms like **ServiceNow**, **Teams**, or **Slack** can route alerts
-- 🧑‍💻 Analysts then:
-  1. Open the incident
-  2. View correlated entities (user, device, IP)
-  3. Run Playbooks (automation)
-  4. Start triaging and tagging the alert
-
----
-
-<details>
-<summary><strong>✅ SCENARIO 1: Phishing Email Detection</strong></summary>
-
-### 📝 Real-World Context
-A finance employee receives a phishing email disguised as a salary verification notice. It contains a fake link meant to steal login credentials.
-
----
-
-### 🧪 Sample Email
-From: hr-support@payroll-verify-alert.com  
-To: finance_dept@company.com  
+✅ SCENARIO 1: Phishing Email Detection
+<details> <summary><strong>🔍 Click here to expand</strong></summary>
+📖 Real-World Context
+A finance employee at a mid-sized company receives an email that appears to be from the payroll department. The email urges the recipient to click a link to avoid salary delays.
+This is a classic phishing attempt aiming to steal login credentials or deliver malware.
+
+📧 Sample Email (Spoofed)
+From: hr-support@payroll-verify-alert.com
+To: finance_dept@company.com
 Subject: Urgent: Action Required to Release Salary
+Body:
 
----
+Your payroll verification is pending. Click the link to avoid salary delay:
+http://payroll-verify-alert.com/login
 
-### 🚩 Red Flags:
-- External spoofed domain  
-- Urgency (salary delay)  
-- Fake link
+🚨 Red Flags in the Email
+Sender domain mismatch (not from company domain)
 
----
+Urgent tone to cause panic
 
-### 🛠️ Analyst Action:
+Hyperlink leads to unknown domain
 
-1. Create file `phishing_alert.log`:
-```
-Timestamp | AlertType | Subject | Recipient | SenderFromAddress | ThreatType
-2025-06-15 11:14:33 | ALERT | Urgent: Action Required to Release Salary | finance_dept@company.com | hr-support@payroll-verify-alert.com | URL Phishing
-2025-06-15 11:15:00 | INFO | Payroll Verification Update | john.smith@company.com | noreply@trustedhr.com | Clean
-2025-06-15 11:16:12 | ALERT | Your Action Needed Today | kate.james@company.com | helpdesk@secure-hr.net | URL Phishing
-```
+Spoofing of internal HR department
 
-2. Upload to VM: `C:\SecurityLogs\phishing_alert.log`  
-3. Create DCR: Sentinel → Data Connectors → Custom Logs  
-4. Log Table: `PhishingLog_CL`
+🧪 Analyst Simulation Steps
+Create Dummy Log File:
+Save the following to a text file named phishing_alert.log:
 
----
+sql
+Copy
+Edit
+Timestamp | AlertType | Subject | Recipient | SenderFromAddress | ThreatType  
+2025-06-15 11:14:33 | ALERT | Urgent: Action Required to Release Salary | finance_dept@company.com | hr-support@payroll-verify-alert.com | URL Phishing  
+Upload to VM:
+Place the file at C:\SecurityLogs\phishing_alert.log on your Azure VM.
 
-### 📊 Dummy Log Table
+Configure Data Collection Rule (DCR):
 
-| Timestamp           | AlertType | Subject                             | Recipient               | SenderFromAddress                   | ThreatType     |
-|---------------------|-----------|--------------------------------------|--------------------------|--------------------------------------|----------------|
-| 2025-06-15 11:14:33 | ALERT     | Urgent: Action Required to Release Salary | finance_dept@company.com | hr-support@payroll-verify-alert.com | URL Phishing   |
+Go to Microsoft Sentinel > Data Connectors > Custom Logs
 
----
+Path: C:\SecurityLogs\phishing_alert.log
 
-### 🧠 KQL Detection:
-```kql
+Table name: PhishingLog_CL
+
+Log Ingestion Complete
+
+📊 Dummy Detection Table (PhishingLog_CL)
+Timestamp	AlertType	Subject	Recipient	SenderFromAddress	ThreatType
+2025-06-15 11:14:33	ALERT	Urgent: Action Required to Release Salary	finance_dept@company.com	hr-support@payroll-verify-alert.com	URL Phishing
+
+📌 Detection Logic (KQL Query)
+kusto
+Copy
+Edit
 PhishingLog_CL
-| where AlertType == "ALERT"
-| where Subject has_any("Urgent", "Action", "Suspension")
+| where AlertType == "ALERT"  // Show only alerts
+| where Subject has_any("Urgent", "Action", "Suspension")  // Trigger keywords
 | extend DomainCheck = iif(SenderFromAddress endswith "@company.com", "Trusted", "Suspicious")
 | project TimeGenerated=Timestamp, Recipient, SenderFromAddress, Subject, DomainCheck, ThreatType
-```
+🧠 What Analysts See After Alert
+Alert shown in Sentinel's Incident Queue
 
----
+Analyst clicks the alert to view sender, subject, and message details
 
-### 🕵️ MITRE ATT&CK Mapping:
+Analyst checks whether this email was clicked or ignored
 
-- [T1566.001 – Spearphishing via Service](https://attack.mitre.org/techniques/T1566/001/)
-- [T1585.001 – Email Spoofing](https://attack.mitre.org/techniques/T1585/001/)
+Correlates with sign-in logs or malware alerts
 
----
+🛎️ Alerts may also trigger:
 
-### 🛡️ Prevention:
+Email notifications (if configured)
 
-- Safe Links enabled in Defender
-- Anti-Phishing policies in Defender
-- SPF, DKIM, DMARC setup
+Microsoft Teams SOC channel messages
 
-</details>
+SIEM dashboards
 
----
+🎯 MITRE ATT&CK Techniques
+T1566.001 – Spearphishing via Service
 
-🧠 Created by: Security Analyst - Email Detection Project  
-📅 Last Updated: 2025-06-16
+T1585.001 – Spoofing Email Accounts
 
+🛡️ Prevention Measures
+✅ Enable Safe Links: Microsoft Defender scans all URLs on click
 
----
+✅ Anti-Phishing Policies: Detect impersonation, especially of VIPs
 
-<details>
+✅ SPF (Sender Policy Framework): Blocks spoofed domains
 
-<summary><strong>✅ SCENARIO 5: Email Spoofing Detection using SPF/DKIM/DMARC Logs</strong></summary>
+✅ DKIM (DomainKeys Identified Mail): Ensures message hasn’t been modified
 
-### 📖 Real-World Context:
-An external attacker sends an email that appears to come from the CEO of the company, requesting a wire transfer. The domain used looks identical, but DMARC checks fail.
-
----
-
-### 📧 Sample Spoofed Email:
-- **From:** ceo@company.co (spoofed)
-- **To:** finance_team@company.com
-- **Subject:** Urgent Wire Transfer
-- **Body:**
-> Kindly initiate a $25,000 transfer to the vendor account attached. This is urgent and confidential.
-
----
-
-### ❌ Red Flags:
-- Domain closely mimics the official domain (`company.co` vs `company.com`)
-- Urgent financial request
-- External IP
-- Fails SPF/DKIM/DMARC checks
-
----
-
-### 🧠 Analyst Action:
-1. Enable DMARC reporting in DNS records
-2. Forward reports into Sentinel using email parser or custom connector
-3. Parse and log spoofed emails
-
----
-
-### 📊 Dummy Log Format (SPF/DMARC Analysis)
-
-| Timestamp           | Sender                | Recipient              | SPFResult | DKIMResult | DMARCResult | Action       |
-|---------------------|------------------------|--------------------------|-----------|------------|-------------|--------------|
-| 2025-06-18 11:12:43 | ceo@company.co         | finance_team@company.com | Fail      | Fail       | Fail        | Rejected     |
-| 2025-06-18 11:14:22 | updates@linkedin.com   | user@company.com         | Pass      | Pass       | Pass        | Delivered    |
-
----
-
-### 🔍 KQL Detection:
-```kql
-SpoofLog_CL
-| where DMARCResult == "Fail"
-| where SPFResult == "Fail" or DKIMResult == "Fail"
-| extend SenderDomain = extract("@(.*)", 1, Sender)
-| project Timestamp, Sender, Recipient, SPFResult, DKIMResult, DMARCResult, SenderDomain
-```
-
----
-
-### 🧠 Analyst View:
-- Alert appears in Microsoft Sentinel under `SpoofLog_CL`
-- Trigger includes sender IP, spoofed domain, and DMARC results
-- Analyst checks other logs: login, mailbox rules, prior spoof attempts
-
----
-
-### 🎯 MITRE ATT&CK Mapping:
-- [T1585.001 – Spoofing Email Accounts](https://attack.mitre.org/techniques/T1585/001/)
-- [T1566.002 – Spearphishing via Spoofed Email](https://attack.mitre.org/techniques/T1566/002/)
-
----
-
-### ⚙️ Incident Response:
-- Block sender domain at mail gateway
-- Add IP to spam filter
-- Create rule in Exchange for lookalike domain alerting
-- Notify executives and enable mailbox logging
-
----
-
-### 🛡️ Prevention Techniques:
-- SPF, DKIM, and DMARC configuration with strict policies
-- Use of external sender warning banners
-- Advanced phishing protection in Microsoft Defender
-
-</details>
-
-<details>
-<summary><strong>📊 How Analysts Receive and React to Alerts (Real-World View)</strong></summary>
-
-### 🔔 How Alerts Are Triggered and Notified in a SOC:
-
-When an alert is triggered in Microsoft Sentinel (or any SIEM), this is what typically happens:
-
-| Step | What Happens | Description |
-|------|--------------|-------------|
-| 1 | Detection Rule Fires | KQL logic matches suspicious log pattern (e.g., Phishing email or DLP event). |
-| 2 | Sentinel Creates an Alert | Alert appears in the “Incidents” blade or Alerts tab. |
-| 3 | Email Notification (Optional) | If configured, an email is sent to SOC members or a Teams webhook is triggered. |
-| 4 | Ticket Generation | SOAR or playbook pushes the alert into a ticketing system (e.g., ServiceNow, Jira). |
-| 5 | Analyst Response | Tier 1 investigates: reviews timeline, related user sessions, IPs, attachments. |
-| 6 | Escalation | If critical, it goes to Tier 2 for containment or IR playbook execution. |
-
----
-
-### 📷 What the Analyst Sees:
-
-Each alert includes:
-- Timestamp
-- Entities (email addresses, IPs, filenames)
-- Confidence level (Low/Medium/High)
-- Recommended actions
-- Link to original logs
+✅ DMARC: Quarantines or rejects emails failing SPF/DKIM
 
 </details>
 
 
+✅ SCENARIO 2: Data Loss Prevention (DLP) on Emails
+<details> <summary><strong>🧾 Click here to expand</strong></summary>
+📖 Real-World Context
+An employee from the finance department attempts to send a spreadsheet containing Social Security Numbers (SSNs) and credit card details to an external vendor via email. This violates company policies on sharing Personally Identifiable Information (PII) outside the organization.
 
+📧 Incident Description
+Sender: maria.lopez@company.com
+Recipient: external_vendor@partners.com
+Attachment: client_records.xlsx
+Data Types: SSN, Credit Card Number
+Violation: External email with PII
 
+🧪 Analyst Simulation Steps
+Create Log File named dlp_alert.log:
 
+sql
+Copy
+Edit
+Timestamp | Sender | Recipient | AttachmentName | DataTypeDetected | PolicyViolated  
+2025-06-16 09:12:45 | maria.lopez@company.com | external_vendor@partners.com | client_records.xlsx | SSN, Credit Card Number | External Email with PII  
+Upload to VM:
+Place it under: C:\SecurityLogs\dlp_alert.log
 
+Configure Data Collection Rule (DCR):
 
+Go to Microsoft Sentinel > Data Connectors > Custom Logs
 
+Path: C:\SecurityLogs\dlp_alert.log
 
+Table name: DLPLog_CL
 
+📊 Dummy Log Table (DLPLog_CL)
+Timestamp	Sender	Recipient	AttachmentName	DataTypeDetected	PolicyViolated
+2025-06-16 09:12:45	maria.lopez@company.com	external_vendor@partners.com	client_records.xlsx	SSN, Credit Card Number	External Email with PII
 
-
-# 📧 Email Security Simulation Project (Insider Threat Detection)
-**Using Microsoft Sentinel, Defender for Office 365, Exchange Rules, and DLP**
-
-<details>
-<summary><strong>✅ Scenario 1: Phishing Email Detection</strong></summary>
-
-### Real-World Context
-A payroll-themed email impersonates HR and uses urgency to trick users into clicking a phishing link.
-
-### 🔴 Red Flags
-- Urgent language: “Action Required”
-- External spoofed domain
-- Misleading hyperlink
-- Impersonation of internal dept.
-
-### 🧪 Dummy Logs (PhishingLog_CL)
-
-| Timestamp           | AlertType | Subject                             | Recipient               | SenderFromAddress                   | ThreatType     |
-|---------------------|-----------|--------------------------------------|--------------------------|--------------------------------------|----------------|
-| 2025-06-15 11:14:33 | ALERT     | Urgent: Action Required to Release Salary | finance_dept@company.com | hr-support@payroll-verify-alert.com | URL Phishing   |
-
-### 🔍 KQL Query
-```kql
-PhishingLog_CL
-| where AlertType == "ALERT"
-| where Subject has_any("Urgent", "Action")
-| extend DomainCheck = iif(SenderFromAddress endswith "@company.com", "Trusted", "Suspicious")
-```
-
-### 🧠 Alerting Process
-Analyst receives alert inside Sentinel → Investigates message → Confirms spoofed sender
-
-### 🎯 MITRE ATT&CK Mapping
-- [T1566.001 - Spearphishing via Service](https://attack.mitre.org/techniques/T1566/001/)
-- [T1585.001 - Spoofing Email Accounts](https://attack.mitre.org/techniques/T1585/001/)
-
-### 🛡️ Prevention Techniques
-- Safe Links
-- Anti-Phishing Policy
-- SPF, DKIM, DMARC
-
-</details>
-
-<details>
-<summary><strong>✅ Scenario 2: DLP - Sensitive Data Exfiltration</strong></summary>
-
-### Real-World Context
-An employee mistakenly sends SSNs and card numbers externally.
-
-### 🔴 Red Flags
-- SSNs + credit cards in email
-- External vendor recipient
-- No encryption
-
-### 🧪 Dummy Logs (DLPLog_CL)
-| Timestamp           | Sender                  | Recipient              | AttachmentName       | DataTypeDetected           | PolicyViolated             |
-|---------------------|--------------------------|-------------------------|------------------------|-----------------------------|-----------------------------|
-| 2025-06-16 09:12:45 | maria.lopez@company.com | external@partner.com    | client_records.xlsx    | SSN, Credit Card Number     | External Email with PII     |
-
-### 🔍 KQL Query
-```kql
+📌 Detection Logic (KQL Query)
+kusto
+Copy
+Edit
 DLPLog_CL
-| where DataTypeDetected has_any ("SSN", "Credit Card")
-| where Recipient !endswith "@company.com"
-```
+| where DataTypeDetected has_any ("SSN", "Credit Card")  // Look for PII keywords
+| where Recipient !endswith "@company.com"               // Only flag external sending
+| project Timestamp, Sender, Recipient, DataTypeDetected, PolicyViolated
+🧠 What Analysts See After Alert
+Alert shows in Microsoft Sentinel DLP dashboard
 
-### 🧠 Analyst Response
-Alert → Analyst validates → Escalates to HR → Exchange Rule blocks recipient
+Analyst checks:
 
-### 🎯 MITRE ATT&CK Mapping
-- [T1041 - Exfiltration Over C2](https://attack.mitre.org/techniques/T1041/)
-- [T1081 - Credentials in Files](https://attack.mitre.org/techniques/T1081/)
+Sender and recipient domain
+
+Content type (SSN, card info)
+
+Any existing override or justification from the user
+
+Coordinates with compliance/GRC teams if it's a confirmed policy violation
+
+🔔 Analysts may receive:
+
+Sentinel Incident Notification
+
+Microsoft Purview DLP policy alerts
+
+Email/Teams notifications if enabled
+
+🎯 MITRE ATT&CK Techniques
+T1041 – Exfiltration Over Command and Control Channel
+
+T1537 – Transfer Data to Cloud Account
+
+🛡️ Prevention and Controls
+✅ Microsoft Purview DLP Rules: Block or warn when PII is detected
+
+✅ Auto-labeling in Office Apps: Applies sensitivity labels to content
+
+✅ Train Employees: Conduct security awareness to reduce accidental data sharing
+
+✅ Quarantine or Policy Tips: Inform user in Outlook before sending
 
 </details>
 
-<!-- Add similar sections for Scenario 3 to Scenario 7 -->
 
-# 📊 Alerting Workflow for Analysts
-- Alerts show up in Microsoft Sentinel Incident queue
-- Analyst receives email or sees real-time alert banner
-- Opens Incident → Views Alert Rule logic → Launches Investigation
-- Takes response actions (isolate, notify, block, hunt)
+✅ SCENARIO 3: Malware in Email Attachments
+<details> <summary><strong>🦠 Click here to expand</strong></summary>
+📖 Real-World Context
+A user in the finance department receives an email from an unknown invoicing domain. The message includes a .docm (macro-enabled) attachment, which contains a malicious macro that attempts to download and execute a trojan from a remote server.
+
+📧 Incident Email Sample
+From: billing@invoiceportal.net
+To: danielle.watson@company.com
+Subject: New Invoice for Review
+Attachment: Invoice.docm
+
+When the user opens this file and enables macros, a hidden PowerShell script executes and contacts an external command-and-control (C2) server to download a trojan payload.
+
+🧪 Log Simulation
+Step 1: Create a log file malware_email.log
+
+sql
+Copy
+Edit
+Timestamp | Sender | Recipient | AttachmentName | FileType | ThreatDetected | ActionTaken  
+2025-06-16 10:10:12 | billing@invoiceportal.net | danielle.watson@company.com | Invoice.docm | macro-enabled | TrojanDownloader | Quarantined  
+Step 2: Place the log in VM path:
+C:\SecurityLogs\malware_email.log
+
+Step 3: Create DCR:
+
+Go to Microsoft Sentinel → Data Connectors → Custom Logs
+
+Path: C:\SecurityLogs\malware_email.log
+
+Table: MalwareEmailLog_CL
+
+📊 Dummy Log Table (MalwareEmailLog_CL)
+Timestamp	Sender	Recipient	AttachmentName	FileType	ThreatDetected	ActionTaken
+2025-06-16 10:10:12	billing@invoiceportal.net	danielle.watson@company.com	Invoice.docm	macro-enabled	TrojanDownloader	Quarantined
+
+📌 KQL Detection Logic
+kql
+Copy
+Edit
+MalwareEmailLog_CL
+| where ThreatDetected != "Clean"                                  // Only show threats
+| where FileType in ("macro-enabled", ".exe", ".scr")              // Filter suspicious file types
+| project Timestamp, Sender, Recipient, AttachmentName, ThreatDetected
+🧠 Analyst Workflow After Alert
+Detection Triggered in Sentinel
+
+Analyst views alert details in Incidents blade
+
+Confirms attachment type, sender domain reputation, quarantine status
+
+Cross-checks user activity logs for execution behavior
+
+If confirmed, triggers incident response workflow
+
+🛑 Notification Types:
+
+Microsoft Defender Alert Email
+
+Sentinel Incident Notification
+
+SIEM dashboard (Visual alert with severity level)
+
+🎯 MITRE ATT&CK Mapping
+T1204.002 – User Execution: Malicious File
+
+T1059 – Command and Scripting Interpreter (via PowerShell)
+
+🔐 Prevention Techniques
+✅ Safe Attachments (Microsoft Defender for Office 365)
+
+✅ Block risky extensions (.docm, .exe, .js)
+
+✅ Disable macros by default for all Office files
+
+✅ Enable Zero-Hour Auto Purge (ZAP)
+
+✅ Enable attachment sandboxing in email security policy
+
+</details>
+
+
+✅ SCENARIO 4: Email Firewall using Exchange Transport Rules (ETRs)
+<details> <summary><strong>🛑 Click here to expand</strong></summary>
+📖 Real-World Context
+A marketing employee receives an email from a Russian domain promoting a fake lottery win. The message contains an executable .exe file as an attachment. This could be a malware dropper intended to compromise the endpoint.
+
+These types of spam or malware-laced emails are often blocked at the perimeter using Exchange Transport Rules (ETRs), acting like a firewall for your email flow.
+
+📧 Email Sample
+From: promotions@freelottery.ru
+To: emma@company.com
+Subject: 🎉 You’ve Won a New Phone
+Attachment: gift.exe
+
+❌ Red Flags
+Sender domain ends in .ru (known TLD abuse)
+
+Executable file attachment .exe
+
+Subject line includes clickbait or rewards
+
+Impersonal and generic language
+
+🧪 Simulated Log File
+Create file email_firewall_block.log
+
+nginx
+Copy
+Edit
+Timestamp | Sender | Recipient | Subject | Attachment | RuleMatched | ActionTaken  
+2025-06-17 10:23:11 | promotions@freelottery.ru | emma@company.com | You’ve Won | gift.exe | Block Executables | Quarantined  
+Upload to VM under: C:\SecurityLogs\email_firewall_block.log
+Create a custom DCR in Sentinel → Data Connectors → Custom Logs
+Table Name: FirewallEmailLog_CL
+
+📊 Dummy Log Table (FirewallEmailLog_CL)
+Timestamp	Sender	Recipient	Subject	Attachment	RuleMatched	ActionTaken
+2025-06-17 10:23:11	promotions@freelottery.ru	emma@company.com	You’ve Won	gift.exe	Block Executables	Quarantined
+
+📌 KQL Detection Logic
+kql
+Copy
+Edit
+FirewallEmailLog_CL
+| where ActionTaken in ("Rejected", "Quarantined")           // Look for blocked or quarantined messages
+| project Timestamp, Sender, Subject, Attachment, RuleMatched
+🧠 What Happens After the Alert?
+Analyst sees alert triggered via SIEM or Email notification from Defender
+
+Opens alert → Reviews sender and file type → Confirms block/quarantine
+
+May cross-reference with known IOCs or sender domain reputation
+
+Checks if similar messages were delivered to other inboxes
+
+Escalates if part of campaign or triggers user awareness follow-up
+
+🧠 MITRE ATT&CK Mapping
+T1566.002 – Phishing: Link
+
+T1204.001 – User Execution: Malicious Link or Attachment
+
+🔐 Prevention Techniques
+✅ Use Exchange Transport Rules (ETRs) to block messages with .exe, .js, or foreign domains
+
+✅ Block known malicious domains or country TLDs like .ru, .cn, .tk
+
+✅ Use Regex keyword filters for lottery, win, free, reward, etc.
+
+✅ Enable Defender for Office 365 to inspect attachments and apply Safe Attachments
+
+✅ Regularly audit and test ETR policies
+
+</details>
+
+
+
+
+
+
+✅ SCENARIO 5: Email Spoofing and SPF Failures
+<details> <summary><strong>🚨 Click here to expand</strong></summary>
+📖 Real-World Context
+An attacker sends a spoofed email appearing to come from the CEO of the company. The email urges the recipient to download a file related to payroll. On inspection, the email fails SPF (Sender Policy Framework) validation and has no DKIM (DomainKeys Identified Mail) or DMARC (Domain-based Message Authentication, Reporting & Conformance) signatures — clear signs of spoofing.
+
+📧 Email Sample
+From: ceo@company-hr.com
+To: tom@company.com
+Subject: ⚠️ Important: Download Payroll Document
+Body: Please download the attached payroll update immediately.
+
+❌ Red Flags
+Suspicious external domain (looks similar to official)
+
+SPF failed validation
+
+No DKIM or DMARC present
+
+Uses urgency tactic
+
+Targeting employee from finance
+
+🧪 Simulated Log File
+Create log file: spoofed_email_spf_fail.log
+
+sql
+Copy
+Edit
+Timestamp | Sender | Recipient | Subject | SPFResult | DMARCResult | DKIMResult  
+2025-06-18 09:45:23 | ceo@company-hr.com | tom@company.com | Important: Download Payroll | Fail | None | None  
+Upload to VM under: C:\SecurityLogs\spoofed_email_spf_fail.log
+Create DCR using Sentinel → Data Connectors → Custom Logs
+Table Name: EmailHeaderLog_CL
+
+📊 Dummy Log Table (EmailHeaderLog_CL)
+Timestamp	Sender	Recipient	Subject	SPFResult	DMARCResult	DKIMResult
+2025-06-18 09:45:23	ceo@company-hr.com	tom@company.com	Important: Download Payroll	Fail	None	None
+
+🧠 KQL Detection Query
+kql
+Copy
+Edit
+EmailHeaderLog_CL
+| where SPFResult == "Fail"                             // SPF failure indicates sender not authorized
+| where DMARCResult == "None" or DKIMResult == "None"   // No domain validation or email signature
+| project Timestamp, Sender, Recipient, Subject, SPFResult, DKIMResult, DMARCResult
+📌 What Happens After Alert?
+Alert appears in Microsoft Sentinel or Defender dashboard
+
+Analyst investigates header details and confirms external spoof
+
+Analysts may check similar sender addresses used recently
+
+Incident ticket is created for potential spoofing attack
+
+SOC team may verify if the domain company-hr.com is registered by attacker
+
+🎯 MITRE ATT&CK Mapping
+T1566.001 – Spearphishing via Service
+
+T1585.001 – Spoofing Email Accounts
+
+🔐 Prevention Techniques
+✅ SPF (Sender Policy Framework): Add DNS TXT record to specify allowed IPs/domains to send email on your behalf
+
+✅ DKIM (DomainKeys Identified Mail): Digitally signs emails with your domain
+
+✅ DMARC (Domain-based Message Authentication): Specifies action for failed SPF/DKIM (none, quarantine, reject)
+
+✅ Anti-phishing policies targeting VIP name spoofing and lookalike domains
+
+✅ Block emails failing SPF from sending to internal distribution lists
+
+🧯 Incident Response Steps
+Tier 1 confirms alert from Sentinel
+
+Tier 2 isolates recipient’s device and blocks sender
+
+Header analysis is done to extract attack infrastructure
+
+SOC creates transport rule to quarantine similar emails
+
+IOC (Indicator of Compromise) added to threat intelligence feed
+
+Awareness email sent to finance or executive group
+
+</details>
+
+---
+
+✔️ **Final Notes**
+- Every scenario uses real tactics aligned with MITRE ATT&CK.
+- Logs, alerts, and queries are formatted to simulate SOC workflow.
+- Perfect for portfolio projects and learning email security operations.
+
+
 
 ---
 
