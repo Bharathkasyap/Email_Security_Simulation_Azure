@@ -17,230 +17,6 @@ This document provides real-world, beginner-friendly simulations to understand h
 
 ---
 
-## ✅ SCENARIO 1: Phishing Email Detection
-<details>
-<summary><strong> Click here to expand </summary></strong>
-
-### 📖 Real-World Context:
-A finance employee receives a phishing email mimicking their payroll system. It urges them to click a malicious link.
-
-### 📧 Sample Email:
-From: hr-support@payroll-verify-alert.com  
-To: finance_dept@company.com  
-Subject: Urgent: Action Required to Release Salary  
-Body: Click [http://payroll-verify-alert.com/login](#) to update your info.
-
-### ❌ Red Flags:
-- External spoofed domain
-- Urgency (salary delay)
-- Fake link
-
-### 🧪 Analyst Action:
-1. Create file `phishing_alert.log`
-```
-Timestamp | AlertType | Subject | Recipient | SenderFromAddress | ThreatType
-2025-06-15 11:14:33 | ALERT | Urgent: Action Required to Release Salary | finance_dept@company.com | hr-support@payroll-verify-alert.com | URL Phishing
-```
-
-2. Upload to VM: `C:\SecurityLogs\phishing_alert.log`  
-3. Create DCR using Sentinel > Data Connectors > Custom Logs  
-4. Log Table: `PhishingLog_CL`
-
-### 🧠 KQL Detection:
-```kql
-PhishingLog_CL
-| where AlertType == "ALERT"
-| where Subject has_any("Urgent", "Action", "Suspension")
-| extend DomainCheck = iif(SenderFromAddress endswith "@company.com", "Trusted", "Suspicious")
-| project TimeGenerated=Timestamp, Recipient, SenderFromAddress, Subject, DomainCheck, ThreatType
-```
-
-### 🎯 MITRE ATT&CK Mapping:
-- T1566.001: Spearphishing via Service
-- T1585.001: Email Spoofing
-
-### 🔐 Prevention:
-- Enable Safe Links (Defender)
-- Anti-phishing policies (VIP impersonation)
-- SPF, DKIM, DMARC setup
-
-</details>
-
----
-
-
-## ✅ SCENARIO 2: Data Loss Prevention (DLP) on Emails
-<details><strong><summary>Click here to expand </strong></summary>
-
-### 📖 Context:
-An employee sends SSNs and credit cards to a third-party vendor.
-
-### 🧪 Log Sample:
-```
-Timestamp | Sender | Recipient | AttachmentName | DataTypeDetected | PolicyViolated
-2025-06-16 09:12:45 | maria.lopez@company.com | external_vendor@partners.com | client_records.xlsx | SSN, Credit Card Number | External Email with PII
-```
-
-### 🧠 KQL Detection:
-```kql
-DLPLog_CL
-| where DataTypeDetected has_any ("SSN", "Credit Card")
-| where Recipient !endswith "@company.com"
-| project Timestamp, Sender, Recipient, DataTypeDetected, PolicyViolated
-```
-
-### 🎯 MITRE Mapping:
-- T1041: Exfiltration Over C2
-- T1537: Cloud Transfer
-
-### 🛡️ Prevention:
-- Purview DLP rules
-- Auto-labeling in Office apps
-- Train employees
-
-</details>
-
----
-
-## ✅ SCENARIO 3: Malware in Email Attachments
-<details><strong><summary>Click here to expand </strong></summary>
-
-### 📖 Context:
-An email with `.docm` attachment carries a macro-based downloader.
-
-### 🧪 Log Sample:
-```
-Timestamp | Sender | Recipient | AttachmentName | FileType | ThreatDetected | ActionTaken
-2025-06-16 10:10:12 | billing@invoiceportal.net | danielle.watson@company.com | Invoice.docm | macro-enabled | TrojanDownloader | Quarantined
-```
-
-### 🧠 KQL Detection:
-```kql
-MalwareEmailLog_CL
-| where ThreatDetected != "Clean"
-| where FileType in ("macro-enabled", ".exe", ".scr")
-| project Timestamp, Sender, Recipient, AttachmentName, ThreatDetected
-```
-
-### 🎯 MITRE Mapping:
-- T1204.002: User Execution via Malicious File
-
-### 🛡️ Prevention:
-- Safe Attachments (Defender)
-- Block .exe/.js/.docm
-- Disable macros
-
-</details>
-
----
-
-## ✅ SCENARIO 4: Email Firewall (ETRs)
-
-<details><strong><summary>Click here to expand </strong></summary>
-
-### 📖 Context:
-Block domains like `.ru`, spam with .exe attachments.
-
-### 🧪 Log Sample:
-```
-Timestamp | Sender | Recipient | Subject | Attachment | RuleMatched | ActionTaken
-2025-06-17 10:23:11 | promotions@freelottery.ru | emma@company.com | You’ve Won | gift.exe | Block Executables | Quarantined
-```
-
-### 🧠 KQL Detection:
-```kql
-FirewallEmailLog_CL
-| where ActionTaken in ("Rejected", "Quarantined")
-| project Timestamp, Sender, Subject, Attachment, RuleMatched
-```
-
-### 🛡️ Prevention:
-- Exchange Transport Rules (ETRs)
-- Block by filetype/sender/domain
-- Regex keyword matches
-
-</details>
-
----
-
-## ✅ SCENARIO 5: Email Spoofing and SPF Failures
-<details><summary>Click to expand</summary>
-
-### 📖 Context:
-A spoofed exec email fails SPF and is flagged.
-
-### 🧪 Log Sample:
-```
-Timestamp | Sender | Recipient | Subject | SPFResult | DMARCResult | DKIMResult
-2025-06-18 09:45:23 | ceo@company-hr.com | tom@company.com | Important: Download Payroll | Fail | None | None
-```
-
-### 🧠 KQL Detection:
-```kql
-EmailHeaderLog_CL
-| where SPFResult == "Fail"
-| where DMARCResult == "None" or DKIMResult == "None"
-| project Timestamp, Sender, Recipient, Subject, SPFResult, DKIMResult, DMARCResult
-```
----
-
-### 📊 Dummy Detection Table
-
-| Timestamp           | AlertType | Subject                             | Recipient               | SenderFromAddress                   | ThreatType     |
-|---------------------|-----------|--------------------------------------|--------------------------|--------------------------------------|----------------|
-| 2025-06-15 11:14:33 | ALERT     | Urgent: Action Required to Release Salary | finance_dept@company.com | hr-support@payroll-verify-alert.com | URL Phishing   |
-| 2025-06-15 11:16:12 | ALERT     | Your Action Needed Today             | kate.james@company.com   | helpdesk@secure-hr.net              | URL Phishing   |
-
----
-
-### 🛡️ Prevention:
-- Add SPF DNS record with valid senders
-- Enable DKIM key signing
-- SPF, DKIM, DMARC setup policy to quarantine/reject
-- Anti-phishing policies
-
-</details>
-
----
-
-### 🧠 MITRE ATT&CK Mapping
-
-- T1566.001: Spearphishing via Service
-- T1585.001: Email Spoofing
-
----
-
-### 🧯 Incident Response
-
-- Tier 1 tags phishing alert
-- Tier 2 isolates user device
-- Sandbox test of link
-- Transport rule updated
-- IOC reported
-
-</details>
-
----
-
-### ✅ Summary
-
-This simulation set helps SOC analysts understand and test:
-- Threat detection via logs
-- Real SOC playbook steps
-- MITRE coverage and incident response actions
-
-
-
-
-
-
-
-
-
-
-
-
-
 <h1 align="center">
     <img src="https://readme-typing-svg.herokuapp.com/?font=Righteous&size=35&color=4257f5&center=true&vCenter=true&width=500&height=70&duration=2000&lines=E/Email+Security+Simulation+Project;" />
 </h1>
@@ -322,13 +98,21 @@ PhishingLog_CL
 ### 🧠 Alerting Process
 Analyst receives alert inside Sentinel → Investigates message → Confirms spoofed sender
 
-### 🔐 Prevention:
+### 🔐 Prevention Techniques:
 - Enable Safe Links (Defender)
 - Anti-phishing policies (VIP impersonation)
 - SPF, DKIM, DMARC setup
 - Safe Links
 - Anti-Phishing Policy
 - SPF, DKIM, DMARC
+
+### 🧯 Incident Response Steps
+- Alert Detected in Microsoft Sentinel from Defender for Office 365, showing spoofed HR email with a suspicious link.
+- Tier 1 Analyst investigates sender, confirms phishing, and checks if others received similar emails using KQL.
+- Tier 2 Analyst quarantines the email, tests the malicious link in a sandbox, and blocks the sender domain and IOCs.
+- Containment includes purging the email from all inboxes and applying transport rules to stop similar future attacks.
+- Recovery & Awareness involves notifying users, resetting passwords (if clicked), and updating phishing training examples.
+
 
 </details>
 
@@ -350,8 +134,13 @@ Data Types: SSN, Credit Card Number
 Violation: External email with PII
 
 ### ❌ Red Flags:
-- 
-- 
+- Employee sending sensitive data (SSNs, credit card numbers) to an external domain
+- Email attachments named like “client_records.xlsx” or “confidential_data.csv”
+- No encryption or data masking applied before sending
+- Violates company DLP policy on regulated PII (Personally Identifiable Information)
+- Frequent large file transfers to unknown or unapproved recipients
+
+
 ### 🧪 Analyst Action:
 1. Create file `dlp_alert.log`
 
@@ -413,6 +202,13 @@ Alert shows in Microsoft Sentinel DLP dashboard
 - ✅ Quarantine or Policy Tips: Inform user in Outlook before sending- Enable Safe Links (Defender)
 
 
+### 🧯 Incident Response Steps
+- Alert Triggered by Microsoft Purview DLP rule in Sentinel for PII (SSN/Credit Card) shared with external vendor.
+- Tier 1 Analyst reviews the email logs and confirms that sensitive fields were detected in the attachment.
+- Tier 2 Analyst contacts sender to confirm intent and checks if similar data was shared in the past (data exfil pattern).
+- Containment involves applying encryption policy, temporarily disabling outbound email for the user, and alerting compliance.
+- Recovery & Remediation includes retraining the user, updating DLP rules for stricter enforcement, and documenting the case for audits.
+
 </details>
 
 ---
@@ -432,8 +228,13 @@ Attachment: Invoice.docm
 When the user opens this file and enables macros, a hidden PowerShell script executes and contacts an external command-and-control (C2) server to download a trojan payload.
 
 ### ❌ Red Flags:
-- 
-- 
+- Email contains attachments with risky extensions like .docm, .exe, .js, or .scr
+- Sender’s domain is not recognized or impersonates a known vendor
+- Attachment names like Invoice.docm, Payment.exe designed to trigger curiosity or urgency
+- File behavior triggers antivirus or Defender for Office 365
+- Unexpected attachments from external senders with generic subject lines
+
+
 ### 🧪 Analyst Action:
 1. Create file `malware_email.log`
 
@@ -467,9 +268,6 @@ MalwareEmailLog_CL
 - T1204.002 – User Execution: Malicious File
 - T1059 – Command and Scripting Interpreter (via PowerShell)
 
-### 🧠 What Analysts See After Alert
-Alert shows in Microsoft Sentinel DLP dashboard
-
 ### 🧠 Analyst Workflow After Alert
 - Detection Triggered in Sentinel
 - Analyst views alert details in Incidents blade
@@ -485,11 +283,19 @@ If confirmed, triggers incident response workflow
 - SIEM dashboard (Visual alert with severity level)
 
 ### 🔐 Prevention Techniques
-✅ Safe Attachments (Microsoft Defender for Office 365)
-✅ Block risky extensions (.docm, .exe, .js)
-✅ Disable macros by default for all Office files
-✅ Enable Zero-Hour Auto Purge (ZAP)
-✅ Enable attachment sandboxing in email security policy
+- ✅ Safe Attachments (Microsoft Defender for Office 365)
+- ✅ Block risky extensions (.docm, .exe, .js)
+- ✅ Disable macros by default for all Office files
+- ✅ Enable Zero-Hour Auto Purge (ZAP)
+- ✅ Enable attachment sandboxing in email security policy
+
+
+### 🧯 Incident Response Steps
+- Alert Triggered by Defender for Office 365 detecting malware in the email attachment and quarantining it.
+- Tier 1 Analyst checks the attachment’s hash, sender IP, and whether the recipient opened or forwarded the file.
+- Tier 2 Analyst isolates the endpoint if the attachment was clicked, then runs a malware scan and collects memory dumps.
+- Containment includes blocking sender’s domain, updating anti-malware policies, and revoking access tokens if lateral movement is detected.
+- Recovery involves submitting malware sample to sandbox, patching endpoint if needed, and adding the hash to threat blocklists.
 
 
 </details>
@@ -511,9 +317,12 @@ Subject: 🎉 You’ve Won a New Phone
 Attachment: gift.exe
 
 ### ❌ Red Flags:
+-Emails from domains with risky TLDs like .ru, .cn, .top
+- Attachments with .exe, .scr, .bat—commonly associated with malware
+- Subject lines like “You’ve Won” or “Claim Now” indicating spam or fraud
+- Recipients receive the same message across departments (mass campaign)
+- Email headers missing SPF/DKIM authentication
 - Sender domain ends in .ru (known TLD abuse)
-- Executable file attachment .exe
-- Subject line includes clickbait or rewards
 - Impersonal and generic language
 
 ### 🧪 Analyst Action:
@@ -563,12 +372,19 @@ FirewallEmailLog_CL
 - SIEM dashboard (Visual alert with severity level)
 
 ### 🔐 Prevention Techniques
-✅ Use Exchange Transport Rules (ETRs) to block messages with .exe, .js, or foreign domains
-✅ Block known malicious domains or country TLDs like .ru, .cn, .tk
-✅ Use Regex keyword filters for lottery, win, free, reward, etc.
-✅ Enable Defender for Office 365 to inspect attachments and apply Safe Attachments
-✅ Regularly audit and test ETR policies
+- ✅ Use Exchange Transport Rules (ETRs) to block messages with .exe, .js, or foreign domains
+- ✅ Block known malicious domains or country TLDs like .ru, .cn, .tk
+- ✅ Use Regex keyword filters for lottery, win, free, reward, etc.
+- ✅ Enable Defender for Office 365 to inspect attachments and apply Safe Attachments
+- ✅ Regularly audit and test ETR policies
 
+
+### 🧯 Incident Response Steps
+- Alert Detected when ETR rule matches suspicious filetype or sender domain—email gets quarantined or rejected.
+- Tier 1 Analyst reviews quarantine logs, identifies scope (how many users received the email).
+- Tier 2 Analyst traces sender domain reputation and blocklist status, updates rules to extend protection if new variants are seen.
+- Containment Actions include blacklisting the domain, tightening ETRs with regex or more precise keywords, and preventing delivery of similar patterns.
+- Recovery and Awareness: Add domain to transport blocklist, alert affected users not to whitelist manually, and update playbooks for future TLD-based threats.
 
 </details>
 
@@ -639,11 +455,11 @@ EmailHeaderLog_CL
 - SIEM dashboard (Visual alert with severity level)
 
 ### 🔐 Prevention Techniques
-✅ SPF (Sender Policy Framework): Add DNS TXT record to specify allowed IPs/domains to send email on your behalf
-✅ DKIM (DomainKeys Identified Mail): Digitally signs emails with your domain
-✅ DMARC (Domain-based Message Authentication): Specifies action for failed SPF/DKIM (none, quarantine, reject)
-✅ Anti-phishing policies targeting VIP name spoofing and lookalike domains
-✅ Block emails failing SPF from sending to internal distribution lists
+- ✅ SPF (Sender Policy Framework): Add DNS TXT record to specify allowed IPs/domains to send email on your behalf
+- ✅ DKIM (DomainKeys Identified Mail): Digitally signs emails with your domain
+- ✅ DMARC (Domain-based Message Authentication): Specifies action for failed SPF/DKIM (none, quarantine, reject)
+- ✅ Anti-phishing policies targeting VIP name spoofing and lookalike domains
+- ✅ Block emails failing SPF from sending to internal distribution lists
 
 
 ### 🧯 Incident Response Steps
