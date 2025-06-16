@@ -357,7 +357,7 @@ FirewallEmailLog_CL
 ### 🧪 Dummy Logs (MalwareEmailLog_CL)
 
 | Timestamp           | Sender | Recipient                             | Subject   | Attachment               | RuleMatched                   | ThreatDetected    | ActionTaken |
-|---------------------|-----------|--------------------------------------|--------------------------|--------------------------------------|----------------|-------------|
+|---------------------|-----------|----------------|----------------------|--------------------------|--------------------------------------|----------------|-------------|
 | 2025-06-15 11:14:33 | promotions@freelottery.ru    | emma@company.com | You’ve Won a New Phone	| gift.exe |Block Executables  |  TrojanDownloader | Quarantined  |
 
 
