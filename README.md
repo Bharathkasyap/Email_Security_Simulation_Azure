@@ -26,7 +26,7 @@ A finance employee at a mid-sized company receives an email that appears to be f
 This is a classic phishing attempt aiming to steal login credentials or deliver malware.
 
 <div align="center">
-<img src =images/PhishingEmailDetected.png width="300" height="200>
+<img src =images/PhishingEmailDetected.png width="300">
 </div>
  </br>
 
