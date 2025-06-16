@@ -17,7 +17,7 @@ This document provides real-world, beginner-friendly simulations to understand h
 
 ---
 
-## ✅ SCENARIO 1: Phishing Email Detection
+### ✅ SCENARIO 1: Phishing Email Detection
 <details>
 <summary><strong> Click here to expand </summary></strong>
 
@@ -118,7 +118,7 @@ Uses SPF and DKIM results to instruct receiving servers to reject/quarantine spo
 ---
 
 
-## ✅ SCENARIO 2: Data Loss Prevention (DLP) on Emails
+### ✅ SCENARIO 2: Data Loss Prevention (DLP) on Emails
 <details>
 <summary><strong> Click here to expand </summary></strong>
 
@@ -211,7 +211,7 @@ Alert shows in Microsoft Sentinel DLP dashboard
 
 ---
 
-## ✅ SCENARIO 3: Malware in Email Attachments
+### ✅ SCENARIO 3: Malware in Email Attachments
 <details> <summary><strong>🦠 Click here to expand</strong></summary>
 
 ### 📖 Real-World Context:
@@ -305,7 +305,7 @@ If confirmed, triggers incident response workflow
 
 ---
 
-## ✅ SCENARIO 4: Email Firewall using Exchange Transport Rules (ETRs)
+### ✅ SCENARIO 4: Email Firewall using Exchange Transport Rules (ETRs)
 <details> <summary><strong>🛑 Click here to expand</strong></summary>
 
 ### 📖 Real-World Context:
@@ -398,7 +398,7 @@ FirewallEmailLog_CL
 
 ---
 
-## ✅ SCENARIO 5: Email Spoofing and SPF Failures
+### ✅ SCENARIO 5: Email Spoofing and SPF Failures
 <details> <summary><strong>🚨 Click here to expand</strong></summary>
 
 ### 📖 Real-World Context:
