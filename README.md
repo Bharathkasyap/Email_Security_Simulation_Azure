@@ -635,3 +635,104 @@ Each alert includes:
 </details>
 
 
+
+
+
+
+
+
+
+
+
+
+# 📧 Email Security Simulation Project (Insider Threat Detection)
+**Using Microsoft Sentinel, Defender for Office 365, Exchange Rules, and DLP**
+
+<details>
+<summary><strong>✅ Scenario 1: Phishing Email Detection</strong></summary>
+
+### Real-World Context
+A payroll-themed email impersonates HR and uses urgency to trick users into clicking a phishing link.
+
+### 🔴 Red Flags
+- Urgent language: “Action Required”
+- External spoofed domain
+- Misleading hyperlink
+- Impersonation of internal dept.
+
+### 🧪 Dummy Logs (PhishingLog_CL)
+
+| Timestamp           | AlertType | Subject                             | Recipient               | SenderFromAddress                   | ThreatType     |
+|---------------------|-----------|--------------------------------------|--------------------------|--------------------------------------|----------------|
+| 2025-06-15 11:14:33 | ALERT     | Urgent: Action Required to Release Salary | finance_dept@company.com | hr-support@payroll-verify-alert.com | URL Phishing   |
+
+### 🔍 KQL Query
+```kql
+PhishingLog_CL
+| where AlertType == "ALERT"
+| where Subject has_any("Urgent", "Action")
+| extend DomainCheck = iif(SenderFromAddress endswith "@company.com", "Trusted", "Suspicious")
+```
+
+### 🧠 Alerting Process
+Analyst receives alert inside Sentinel → Investigates message → Confirms spoofed sender
+
+### 🎯 MITRE ATT&CK Mapping
+- [T1566.001 - Spearphishing via Service](https://attack.mitre.org/techniques/T1566/001/)
+- [T1585.001 - Spoofing Email Accounts](https://attack.mitre.org/techniques/T1585/001/)
+
+### 🛡️ Prevention Techniques
+- Safe Links
+- Anti-Phishing Policy
+- SPF, DKIM, DMARC
+
+</details>
+
+<details>
+<summary><strong>✅ Scenario 2: DLP - Sensitive Data Exfiltration</strong></summary>
+
+### Real-World Context
+An employee mistakenly sends SSNs and card numbers externally.
+
+### 🔴 Red Flags
+- SSNs + credit cards in email
+- External vendor recipient
+- No encryption
+
+### 🧪 Dummy Logs (DLPLog_CL)
+| Timestamp           | Sender                  | Recipient              | AttachmentName       | DataTypeDetected           | PolicyViolated             |
+|---------------------|--------------------------|-------------------------|------------------------|-----------------------------|-----------------------------|
+| 2025-06-16 09:12:45 | maria.lopez@company.com | external@partner.com    | client_records.xlsx    | SSN, Credit Card Number     | External Email with PII     |
+
+### 🔍 KQL Query
+```kql
+DLPLog_CL
+| where DataTypeDetected has_any ("SSN", "Credit Card")
+| where Recipient !endswith "@company.com"
+```
+
+### 🧠 Analyst Response
+Alert → Analyst validates → Escalates to HR → Exchange Rule blocks recipient
+
+### 🎯 MITRE ATT&CK Mapping
+- [T1041 - Exfiltration Over C2](https://attack.mitre.org/techniques/T1041/)
+- [T1081 - Credentials in Files](https://attack.mitre.org/techniques/T1081/)
+
+</details>
+
+<!-- Add similar sections for Scenario 3 to Scenario 7 -->
+
+# 📊 Alerting Workflow for Analysts
+- Alerts show up in Microsoft Sentinel Incident queue
+- Analyst receives email or sees real-time alert banner
+- Opens Incident → Views Alert Rule logic → Launches Investigation
+- Takes response actions (isolate, notify, block, hunt)
+
+---
+
+✔️ **Final Notes**
+- Every scenario uses real tactics aligned with MITRE ATT&CK.
+- Logs, alerts, and queries are formatted to simulate SOC workflow.
+- Perfect for portfolio projects and learning email security operations.
+
+
