@@ -77,9 +77,29 @@ PhishingLog_CL
 - [T1585.001 - Spoofing Email Accounts](https://attack.mitre.org/techniques/T1585/001/)
 
 ### 🧠 Alerting Process
-Analyst receives alert inside Sentinel → Investigates message → Confirms spoofed sender
+- Microsoft Sentinel Incident Notification is triggered via custom analytic rule or connector (e.g., Defender for Office 365 or custom log ingestion).
+- Alert appears in the Incidents pane within Sentinel, tagged under "Phishing" or "Email Spoof".
+- Tier 1 SOC Analyst investigates sender domain, message headers, and hyperlinks.
+- Analyst checks against internal allowlists and recent user reports.
+- Teams or Email alert (if configured) notifies analyst or security team in real-time.
 
 ### 🔐 Prevention Techniques:
+- Safe Links (Microsoft Defender)
+Scans and rewrites URLs in emails; blocks known malicious links before click.
+
+- Anti-Phishing Policies
+Detects impersonation of VIPs or internal domains using behavioral analytics.
+
+- SPF (Sender Policy Framework)
+Verifies if sender IPs are authorized for the domain.
+
+- DKIM (DomainKeys Identified Mail)
+Adds a digital signature to ensure the message hasn’t been altered.
+
+- DMARC (Domain-based Message Authentication, Reporting & Conformance)
+Uses SPF and DKIM results to instruct receiving servers to reject/quarantine spoofed emails.
+
+
 - Enable Safe Links (Defender)
 - Anti-phishing policies (VIP impersonation)
 - SPF, DKIM, DMARC setup
