@@ -66,7 +66,11 @@ PhishingLog_CL
 
 </details>
 
-## <details><summary>✅ SCENARIO 2: Data Loss Prevention (DLP) on Emails</summary>
+---
+
+
+## ✅ SCENARIO 2: Data Loss Prevention (DLP) on Emails
+<details><strong><summary>Click here to expand </strong></summary>
 
 ### 📖 Context:
 An employee sends SSNs and credit cards to a third-party vendor.
@@ -96,7 +100,10 @@ DLPLog_CL
 
 </details>
 
-## <details><summary>✅ SCENARIO 3: Malware in Email Attachments</summary>
+---
+
+## ✅ SCENARIO 3: Malware in Email Attachments
+<details><strong><summary>Click here to expand </strong></summary>
 
 ### 📖 Context:
 An email with `.docm` attachment carries a macro-based downloader.
@@ -125,7 +132,11 @@ MalwareEmailLog_CL
 
 </details>
 
-## <details><summary>✅ SCENARIO 4: Email Firewall (ETRs)</summary>
+---
+
+## ✅ SCENARIO 4: Email Firewall (ETRs)
+
+<details><strong><summary>Click here to expand </strong></summary>
 
 ### 📖 Context:
 Block domains like `.ru`, spam with .exe attachments.
