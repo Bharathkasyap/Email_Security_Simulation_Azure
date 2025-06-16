@@ -1,4 +1,5 @@
-# Email Security Simulation Project
+# $${{\color{Orange}\normalsize{\textsf{Email Security Simulation Project}}}}$$
+
 
 
 ## 🔐 Project Title: Email Security Simulation Using Microsoft Sentinel
