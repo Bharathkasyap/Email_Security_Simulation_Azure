@@ -26,10 +26,10 @@ A finance employee at a mid-sized company receives an email that appears to be f
 This is a classic phishing attempt aiming to steal login credentials or deliver malware.
 
 ### 📧 Sample Email:
-From: hr-support@payroll-verify-alert.com
-To: finance_dept@company.com
-Subject: Urgent: Action Required to Release Salary
-Body:
+- From: hr-support@payroll-verify-alert.com
+- To: finance_dept@company.com
+- Subject: Urgent: Action Required to Release Salary
+- Body:
 
 Your payroll verification is pending. Click the link to avoid salary delay:
 http://payroll-verify-alert.com/login
@@ -108,11 +108,11 @@ Analyst receives alert inside Sentinel → Investigates message → Confirms spo
 An employee from the finance department attempts to send a spreadsheet containing Social Security Numbers (SSNs) and credit card details to an external vendor via email. This violates company policies on sharing Personally Identifiable Information (PII) outside the organization.
 
 ### 📧 Sample Email:
-Sender: maria.lopez@company.com
-Recipient: external_vendor@partners.com
-Attachment: client_records.xlsx
-Data Types: SSN, Credit Card Number
-Violation: External email with PII
+- Sender: maria.lopez@company.com
+- Recipient: external_vendor@partners.com
+- Attachment: client_records.xlsx
+- Data Types: SSN, Credit Card Number
+- Violation: External email with PII
 
 ### ❌ Red Flags:
 - Employee sending sensitive data (SSNs, credit card numbers) to an external domain
@@ -201,10 +201,10 @@ Alert shows in Microsoft Sentinel DLP dashboard
 A user in the finance department receives an email from an unknown invoicing domain. The message includes a .docm (macro-enabled) attachment, which contains a malicious macro that attempts to download and execute a trojan from a remote server.
 
 ### 📧 Sample Email:
-From: billing@invoiceportal.net
-To: danielle.watson@company.com
-Subject: New Invoice for Review
-Attachment: Invoice.docm
+- From: billing@invoiceportal.net
+- To: danielle.watson@company.com
+- Subject: New Invoice for Review
+- Attachment: Invoice.docm
 
 When the user opens this file and enables macros, a hidden PowerShell script executes and contacts an external command-and-control (C2) server to download a trojan payload.
 
@@ -292,10 +292,10 @@ A marketing employee receives an email from a Russian domain promoting a fake lo
 These types of spam or malware-laced emails are often blocked at the perimeter using Exchange Transport Rules (ETRs), acting like a firewall for your email flow.
 
 ### 📧 Sample Email:
-From: promotions@freelottery.ru
-To: emma@company.com
-Subject: 🎉 You’ve Won a New Phone
-Attachment: gift.exe
+- From: promotions@freelottery.ru
+- To: emma@company.com
+- Subject: 🎉 You’ve Won a New Phone
+- Attachment: gift.exe
 
 ### ❌ Red Flags:
 -Emails from domains with risky TLDs like .ru, .cn, .top
@@ -378,10 +378,10 @@ FirewallEmailLog_CL
 An attacker sends a spoofed email appearing to come from the CEO of the company. The email urges the recipient to download a file related to payroll. On inspection, the email fails SPF (Sender Policy Framework) validation and has no DKIM (DomainKeys Identified Mail) or DMARC (Domain-based Message Authentication, Reporting & Conformance) signatures — clear signs of spoofing.
 
 ### 📧 Sample Email:
-From: ceo@company-hr.com
-To: tom@company.com
-Subject: ⚠️ Important: Download Payroll Document
-Body: Please download the attached payroll update immediately.
+- From: ceo@company-hr.com
+- To: tom@company.com
+- Subject: ⚠️ Important: Download Payroll Document
+- Body: Please download the attached payroll update immediately.
 
 ### ❌ Red Flags:
 - Suspicious external domain (looks similar to official)
