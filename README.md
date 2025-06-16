@@ -25,6 +25,11 @@ This document provides real-world, beginner-friendly simulations to understand h
 A finance employee at a mid-sized company receives an email that appears to be from the payroll department. The email urges the recipient to click a link to avoid salary delays.
 This is a classic phishing attempt aiming to steal login credentials or deliver malware.
 
+<div align="center">
+![Malicious Files Alert](images/MaliciousFilesDetected.png) <img src =images/MaliciousFilesDetected.png width="500">
+</div>
+ </br>
+
 ### 📧 Sample Email:
 - From: hr-support@payroll-verify-alert.com
 - To: finance_dept@company.com
