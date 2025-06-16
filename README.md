@@ -1,5 +1,5 @@
 <h1 align="center">
-    <Email+Security+Simulation+Project>
+    Email Security Simulation Project
 </h1>
 
 ## 🔐 Project Title: Email Security Simulation Using Microsoft Sentinel
