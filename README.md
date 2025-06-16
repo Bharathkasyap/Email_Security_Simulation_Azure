@@ -26,7 +26,7 @@ A finance employee at a mid-sized company receives an email that appears to be f
 This is a classic phishing attempt aiming to steal login credentials or deliver malware.
 
 <div align="center">
-![Malicious Files Alert](images/MaliciousFilesDetected.png) <img src =images/MaliciousFilesDetected.png width="500">
+<img src =images/PhishingEmailDetected.png width="500">
 </div>
  </br>
 
@@ -125,6 +125,11 @@ Uses SPF and DKIM results to instruct receiving servers to reject/quarantine spo
 ### 📖 Real-World Context:
 An employee from the finance department attempts to send a spreadsheet containing Social Security Numbers (SSNs) and credit card details to an external vendor via email. This violates company policies on sharing Personally Identifiable Information (PII) outside the organization.
 
+<div align="center">
+<img src =images/SensitiveDataExfiltraton.png width="500">
+</div>
+ </br>
+ 
 ### 📧 Sample Email:
 - Sender: maria.lopez@company.com
 - Recipient: external_vendor@partners.com
@@ -211,6 +216,11 @@ Alert shows in Microsoft Sentinel DLP dashboard
 
 ### 📖 Real-World Context:
 A user in the finance department receives an email from an unknown invoicing domain. The message includes a .docm (macro-enabled) attachment, which contains a malicious macro that attempts to download and execute a trojan from a remote server.
+
+<div align="center">
+<img src =images/MalwareEmail.png width="500">
+</div>
+ </br>
 
 ### 📧 Sample Email:
 - From: billing@invoiceportal.net
@@ -303,6 +313,11 @@ A marketing employee receives an email from a Russian domain promoting a fake lo
 
 These types of spam or malware-laced emails are often blocked at the perimeter using Exchange Transport Rules (ETRs), acting like a firewall for your email flow.
 
+<div align="center">
+<img src =images/MaliciousFilesDetected.png width="500">
+</div>
+ </br>
+
 ### 📧 Sample Email:
 - From: promotions@freelottery.ru
 - To: emma@company.com
@@ -389,6 +404,10 @@ FirewallEmailLog_CL
 ### 📖 Real-World Context:
 An attacker sends a spoofed email appearing to come from the CEO of the company. The email urges the recipient to download a file related to payroll. On inspection, the email fails SPF (Sender Policy Framework) validation and has no DKIM (DomainKeys Identified Mail) or DMARC (Domain-based Message Authentication, Reporting & Conformance) signatures — clear signs of spoofing.
 
+<div align="center">
+<img src =images/SppofedDomain.png width="500">
+</div>
+ </br>
 ### 📧 Sample Email:
 - From: ceo@company-hr.com
 - To: tom@company.com
