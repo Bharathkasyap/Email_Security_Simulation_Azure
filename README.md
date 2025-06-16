@@ -100,13 +100,6 @@ Adds a digital signature to ensure the message hasn’t been altered.
 Uses SPF and DKIM results to instruct receiving servers to reject/quarantine spoofed emails.
 
 
-- Enable Safe Links (Defender)
-- Anti-phishing policies (VIP impersonation)
-- SPF, DKIM, DMARC setup
-- Safe Links
-- Anti-Phishing Policy
-- SPF, DKIM, DMARC
-
 ### 🧯 Incident Response Steps
 - Alert Detected in Microsoft Sentinel from Defender for Office 365, showing spoofed HR email with a suspicious link.
 - Tier 1 Analyst investigates sender, confirms phishing, and checks if others received similar emails using KQL.
