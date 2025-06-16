@@ -514,3 +514,124 @@ PhishingLog_CL
 📅 Last Updated: 2025-06-16
 
 
+
+
+
+
+
+
+
+
+
+
+
+<details>
+<summary><strong>✅ SCENARIO 5: Email Spoofing Detection using SPF/DKIM/DMARC Logs</strong></summary>
+
+### 📖 Real-World Context:
+An external attacker sends an email that appears to come from the CEO of the company, requesting a wire transfer. The domain used looks identical, but DMARC checks fail.
+
+---
+
+### 📧 Sample Spoofed Email:
+- **From:** ceo@company.co (spoofed)
+- **To:** finance_team@company.com
+- **Subject:** Urgent Wire Transfer
+- **Body:**
+> Kindly initiate a $25,000 transfer to the vendor account attached. This is urgent and confidential.
+
+---
+
+### ❌ Red Flags:
+- Domain closely mimics the official domain (`company.co` vs `company.com`)
+- Urgent financial request
+- External IP
+- Fails SPF/DKIM/DMARC checks
+
+---
+
+### 🧠 Analyst Action:
+1. Enable DMARC reporting in DNS records
+2. Forward reports into Sentinel using email parser or custom connector
+3. Parse and log spoofed emails
+
+---
+
+### 📊 Dummy Log Format (SPF/DMARC Analysis)
+
+| Timestamp           | Sender                | Recipient              | SPFResult | DKIMResult | DMARCResult | Action       |
+|---------------------|------------------------|--------------------------|-----------|------------|-------------|--------------|
+| 2025-06-18 11:12:43 | ceo@company.co         | finance_team@company.com | Fail      | Fail       | Fail        | Rejected     |
+| 2025-06-18 11:14:22 | updates@linkedin.com   | user@company.com         | Pass      | Pass       | Pass        | Delivered    |
+
+---
+
+### 🔍 KQL Detection:
+```kql
+SpoofLog_CL
+| where DMARCResult == "Fail"
+| where SPFResult == "Fail" or DKIMResult == "Fail"
+| extend SenderDomain = extract("@(.*)", 1, Sender)
+| project Timestamp, Sender, Recipient, SPFResult, DKIMResult, DMARCResult, SenderDomain
+```
+
+---
+
+### 🧠 Analyst View:
+- Alert appears in Microsoft Sentinel under `SpoofLog_CL`
+- Trigger includes sender IP, spoofed domain, and DMARC results
+- Analyst checks other logs: login, mailbox rules, prior spoof attempts
+
+---
+
+### 🎯 MITRE ATT&CK Mapping:
+- [T1585.001 – Spoofing Email Accounts](https://attack.mitre.org/techniques/T1585/001/)
+- [T1566.002 – Spearphishing via Spoofed Email](https://attack.mitre.org/techniques/T1566/002/)
+
+---
+
+### ⚙️ Incident Response:
+- Block sender domain at mail gateway
+- Add IP to spam filter
+- Create rule in Exchange for lookalike domain alerting
+- Notify executives and enable mailbox logging
+
+---
+
+### 🛡️ Prevention Techniques:
+- SPF, DKIM, and DMARC configuration with strict policies
+- Use of external sender warning banners
+- Advanced phishing protection in Microsoft Defender
+
+</details>
+
+<details>
+<summary><strong>📊 How Analysts Receive and React to Alerts (Real-World View)</strong></summary>
+
+### 🔔 How Alerts Are Triggered and Notified in a SOC:
+
+When an alert is triggered in Microsoft Sentinel (or any SIEM), this is what typically happens:
+
+| Step | What Happens | Description |
+|------|--------------|-------------|
+| 1 | Detection Rule Fires | KQL logic matches suspicious log pattern (e.g., Phishing email or DLP event). |
+| 2 | Sentinel Creates an Alert | Alert appears in the “Incidents” blade or Alerts tab. |
+| 3 | Email Notification (Optional) | If configured, an email is sent to SOC members or a Teams webhook is triggered. |
+| 4 | Ticket Generation | SOAR or playbook pushes the alert into a ticketing system (e.g., ServiceNow, Jira). |
+| 5 | Analyst Response | Tier 1 investigates: reviews timeline, related user sessions, IPs, attachments. |
+| 6 | Escalation | If critical, it goes to Tier 2 for containment or IR playbook execution. |
+
+---
+
+### 📷 What the Analyst Sees:
+
+Each alert includes:
+- Timestamp
+- Entities (email addresses, IPs, filenames)
+- Confidence level (Low/Medium/High)
+- Recommended actions
+- Link to original logs
+
+</details>
+
+
