@@ -1,4 +1,4 @@
-<align="center">
+
     ${{\color{blue}\huge{\textsf{Email Security Simulation Project:\ }}}}\$
 
 
