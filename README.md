@@ -17,8 +17,9 @@ This document provides real-world, beginner-friendly simulations to understand h
 
 ---
 
-## <details>
-<summary><strong>✅ SCENARIO 1: Phishing Email Detection</summary></strong>
+## ✅ SCENARIO 1: Phishing Email Detection
+<details>
+<summary><strong> Click here to expand </summary></strong>
 
 ### 📖 Real-World Context:
 A finance employee receives a phishing email mimicking their payroll system. It urges them to click a malicious link.
