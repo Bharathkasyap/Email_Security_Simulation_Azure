@@ -161,6 +161,8 @@ FirewallEmailLog_CL
 
 </details>
 
+---
+
 ## ✅ SCENARIO 5: Email Spoofing and SPF Failures
 <details><summary>Click to expand</summary>
 
