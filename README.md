@@ -408,6 +408,7 @@ An attacker sends a spoofed email appearing to come from the CEO of the company.
 <img src =images/SppofedDomain.png width="500">
 </div>
  </br>
+ 
 ### 📧 Sample Email:
 - From: ceo@company-hr.com
 - To: tom@company.com
