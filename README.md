@@ -514,18 +514,10 @@ PhishingLog_CL
 📅 Last Updated: 2025-06-16
 
 
-
-
-
-
-
-
-
-
-
-
+---
 
 <details>
+
 <summary><strong>✅ SCENARIO 5: Email Spoofing Detection using SPF/DKIM/DMARC Logs</strong></summary>
 
 ### 📖 Real-World Context:
