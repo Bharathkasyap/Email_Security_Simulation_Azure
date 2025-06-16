@@ -29,10 +29,7 @@ This is a classic phishing attempt aiming to steal login credentials or deliver 
 - From: hr-support@payroll-verify-alert.com
 - To: finance_dept@company.com
 - Subject: Urgent: Action Required to Release Salary
-- Body:
-
-Your payroll verification is pending. Click the link to avoid salary delay:
-http://payroll-verify-alert.com/login
+- Body:  Your payroll verification is pending. Click the link to avoid salary delay: http://payroll-verify-alert.com/login
 
 <div align="center">
 <img src =images/PhishingEmailDetected.png width="300">
