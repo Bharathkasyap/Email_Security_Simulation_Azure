@@ -448,3 +448,15 @@ EmailHeaderLog_CL
 </details>
 
 ---
+
+<details>
+<summary><strong>📜 Project License (MIT)</strong></summary>
+
+MIT License  
+Copyright (c) 2025 Bharathkasyap  
+
+Permission is hereby granted...  
+<!-- (same as above, keep rest inside the tag) -->
+
+</details>
+
