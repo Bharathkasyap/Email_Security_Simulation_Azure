@@ -25,11 +25,6 @@ This document provides real-world, beginner-friendly simulations to understand h
 A finance employee at a mid-sized company receives an email that appears to be from the payroll department. The email urges the recipient to click a link to avoid salary delays.
 This is a classic phishing attempt aiming to steal login credentials or deliver malware.
 
-<div align="center">
-<img src =images/PhishingEmailDetected.png width="300">
-</div>
- </br>
-
 ### 📧 Sample Email:
 - From: hr-support@payroll-verify-alert.com
 - To: finance_dept@company.com
@@ -38,6 +33,11 @@ This is a classic phishing attempt aiming to steal login credentials or deliver 
 
 Your payroll verification is pending. Click the link to avoid salary delay:
 http://payroll-verify-alert.com/login
+
+<div align="center">
+<img src =images/PhishingEmailDetected.png width="300">
+</div>
+ </br>
 
 ### ❌ Red Flags:
 - External spoofed domain
@@ -125,17 +125,17 @@ Uses SPF and DKIM results to instruct receiving servers to reject/quarantine spo
 ### 📖 Real-World Context:
 An employee from the finance department attempts to send a spreadsheet containing Social Security Numbers (SSNs) and credit card details to an external vendor via email. This violates company policies on sharing Personally Identifiable Information (PII) outside the organization.
 
-<div align="center">
-<img src =images/SensitiveDataExfiltraton.png width="300">
-</div>
- </br>
- 
 ### 📧 Sample Email:
 - Sender: maria.lopez@company.com
 - Recipient: external_vendor@partners.com
 - Attachment: client_records.xlsx
 - Data Types: SSN, Credit Card Number
 - Violation: External email with PII
+
+<div align="center">
+<img src =images/SensitiveDataExfiltraton.png width="300">
+</div>
+ </br>
 
 ### ❌ Red Flags:
 - Employee sending sensitive data (SSNs, credit card numbers) to an external domain
@@ -217,11 +217,6 @@ Alert shows in Microsoft Sentinel DLP dashboard
 ### 📖 Real-World Context:
 A user in the finance department receives an email from an unknown invoicing domain. The message includes a .docm (macro-enabled) attachment, which contains a malicious macro that attempts to download and execute a trojan from a remote server.
 
-<div align="center">
-<img src =images/MalwareEmail.png width="300">
-</div>
- </br>
-
 ### 📧 Sample Email:
 - From: billing@invoiceportal.net
 - To: danielle.watson@company.com
@@ -230,7 +225,12 @@ A user in the finance department receives an email from an unknown invoicing dom
 
 When the user opens this file and enables macros, a hidden PowerShell script executes and contacts an external command-and-control (C2) server to download a trojan payload.
 
-### ❌ Red Flags:
+<div align="center">
+<img src =images/MalwareEmail.png width="300">
+</div>
+ </br>
+
+ ### ❌ Red Flags:
 - Email contains attachments with risky extensions like .docm, .exe, .js, or .scr
 - Sender’s domain is not recognized or impersonates a known vendor
 - Attachment names like Invoice.docm, Payment.exe designed to trigger curiosity or urgency
@@ -313,16 +313,16 @@ A marketing employee receives an email from a Russian domain promoting a fake lo
 
 These types of spam or malware-laced emails are often blocked at the perimeter using Exchange Transport Rules (ETRs), acting like a firewall for your email flow.
 
-<div align="center">
-<img src =images/MaliciousFilesDetected.png width="300">
-</div>
- </br>
-
 ### 📧 Sample Email:
 - From: promotions@freelottery.ru
 - To: emma@company.com
 - Subject: 🎉 You’ve Won a New Phone
 - Attachment: gift.exe
+
+<div align="center">
+<img src =images/MaliciousFilesDetected.png width="300">
+</div>
+ </br>
 
 ### ❌ Red Flags:
 -Emails from domains with risky TLDs like .ru, .cn, .top
@@ -404,16 +404,16 @@ FirewallEmailLog_CL
 ### 📖 Real-World Context:
 An attacker sends a spoofed email appearing to come from the CEO of the company. The email urges the recipient to download a file related to payroll. On inspection, the email fails SPF (Sender Policy Framework) validation and has no DKIM (DomainKeys Identified Mail) or DMARC (Domain-based Message Authentication, Reporting & Conformance) signatures — clear signs of spoofing.
 
-<div align="center">
-<img src =images/SppofedDomain.png width="300">
-</div>
- </br>
- 
 ### 📧 Sample Email:
 - From: ceo@company-hr.com
 - To: tom@company.com
 - Subject: ⚠️ Important: Download Payroll Document
 - Body: Please download the attached payroll update immediately.
+
+<div align="center">
+<img src =images/SppofedDomain.png width="300">
+</div>
+ </br>
 
 ### ❌ Red Flags:
 - Suspicious external domain (looks similar to official)
