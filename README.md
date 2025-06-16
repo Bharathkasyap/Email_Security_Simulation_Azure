@@ -17,25 +17,6 @@ This document provides real-world, beginner-friendly simulations to understand h
 
 ---
 
-<h1 align="center">
-    <img src="https://readme-typing-svg.herokuapp.com/?font=Righteous&size=35&color=4257f5&center=true&vCenter=true&width=500&height=70&duration=2000&lines=E/Email+Security+Simulation+Project;" />
-</h1>
-
-## 🔐 Project Title: Email Security Simulation Using Microsoft Sentinel
-
-### 🔓 Project Objective
-This simulation showcases how common email threats are detected and mitigated using Microsoft Defender for Office 365, Exchange mail rules and Microsoft Sentinel. The goal is to demonstrate end-to-end visibility for analysts of all skill levels.
-
----
-
-This document provides real-world, beginner-friendly simulations to understand how SOC analysts detect and respond to various email-based attacks using:
-- Microsoft Sentinel (SIEM)
-- Microsoft Defender for Office 365
-- Exchange Transport Rules (ETRs)
-- Microsoft Purview DLP
-
----
-
 ## ✅ SCENARIO 1: Phishing Email Detection
 <details>
 <summary><strong> Click here to expand </summary></strong>
