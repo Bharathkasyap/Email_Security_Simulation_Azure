@@ -392,3 +392,125 @@ More scenarios can be added (e.g., spoofing, email firewall rules).
 This README can be previewed properly in GitHub markdown renderers.
 
 
+
+
+
+
+
+
+
+
+
+
+
+# 📧 Insider Threat Simulation Project: Email Security Attack Scenarios and Detection Using Microsoft Sentinel
+
+---
+
+## 🔓 Project Objective
+
+This simulation is designed to help learners and analysts understand how email-based attacks like phishing, malware attachments, and data loss can be detected and managed using Microsoft tools like Microsoft Sentinel, Defender for Office 365, and Exchange Transport Rules.
+
+Each scenario explains:
+- How the attack looks to a regular employee
+- What red flags are seen
+- How logs are created and sent to Sentinel
+- KQL queries used for detection
+- What incident response is triggered
+- The MITRE ATT&CK mapping with external references
+
+---
+
+## 🔔 How Analysts Receive Alerts in Real-World SOC
+
+When a detection rule in Microsoft Sentinel is triggered:
+
+- 🔔 **An alert is automatically generated** and shown in the "Incidents" pane of Sentinel
+- 📬 Optional: An email can be sent to SOC analysts if email notification rules are configured
+- 📲 Integration with platforms like **ServiceNow**, **Teams**, or **Slack** can route alerts
+- 🧑‍💻 Analysts then:
+  1. Open the incident
+  2. View correlated entities (user, device, IP)
+  3. Run Playbooks (automation)
+  4. Start triaging and tagging the alert
+
+---
+
+<details>
+<summary><strong>✅ SCENARIO 1: Phishing Email Detection</strong></summary>
+
+### 📝 Real-World Context
+A finance employee receives a phishing email disguised as a salary verification notice. It contains a fake link meant to steal login credentials.
+
+---
+
+### 🧪 Sample Email
+From: hr-support@payroll-verify-alert.com  
+To: finance_dept@company.com  
+Subject: Urgent: Action Required to Release Salary
+
+---
+
+### 🚩 Red Flags:
+- External spoofed domain  
+- Urgency (salary delay)  
+- Fake link
+
+---
+
+### 🛠️ Analyst Action:
+
+1. Create file `phishing_alert.log`:
+```
+Timestamp | AlertType | Subject | Recipient | SenderFromAddress | ThreatType
+2025-06-15 11:14:33 | ALERT | Urgent: Action Required to Release Salary | finance_dept@company.com | hr-support@payroll-verify-alert.com | URL Phishing
+2025-06-15 11:15:00 | INFO | Payroll Verification Update | john.smith@company.com | noreply@trustedhr.com | Clean
+2025-06-15 11:16:12 | ALERT | Your Action Needed Today | kate.james@company.com | helpdesk@secure-hr.net | URL Phishing
+```
+
+2. Upload to VM: `C:\SecurityLogs\phishing_alert.log`  
+3. Create DCR: Sentinel → Data Connectors → Custom Logs  
+4. Log Table: `PhishingLog_CL`
+
+---
+
+### 📊 Dummy Log Table
+
+| Timestamp           | AlertType | Subject                             | Recipient               | SenderFromAddress                   | ThreatType     |
+|---------------------|-----------|--------------------------------------|--------------------------|--------------------------------------|----------------|
+| 2025-06-15 11:14:33 | ALERT     | Urgent: Action Required to Release Salary | finance_dept@company.com | hr-support@payroll-verify-alert.com | URL Phishing   |
+
+---
+
+### 🧠 KQL Detection:
+```kql
+PhishingLog_CL
+| where AlertType == "ALERT"
+| where Subject has_any("Urgent", "Action", "Suspension")
+| extend DomainCheck = iif(SenderFromAddress endswith "@company.com", "Trusted", "Suspicious")
+| project TimeGenerated=Timestamp, Recipient, SenderFromAddress, Subject, DomainCheck, ThreatType
+```
+
+---
+
+### 🕵️ MITRE ATT&CK Mapping:
+
+- [T1566.001 – Spearphishing via Service](https://attack.mitre.org/techniques/T1566/001/)
+- [T1585.001 – Email Spoofing](https://attack.mitre.org/techniques/T1585/001/)
+
+---
+
+### 🛡️ Prevention:
+
+- Safe Links enabled in Defender
+- Anti-Phishing policies in Defender
+- SPF, DKIM, DMARC setup
+
+</details>
+
+---
+
+🧠 Created by: Security Analyst - Email Detection Project  
+📅 Last Updated: 2025-06-16
+
+
