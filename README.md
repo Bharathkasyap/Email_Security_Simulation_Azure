@@ -71,9 +71,9 @@ PhishingLog_CL
 
 ### 🧪 Dummy Logs (PhishingLog_CL)
 
-| Timestamp           | AlertType | Subject                             | Recipient               | SenderFromAddress                   | ThreatType     |
-|---------------------|-----------|--------------------------------------|--------------------------|--------------------------------------|----------------|
-| 2025-06-15 11:14:33 | ALERT     | Urgent: Action Required to Release Salary | finance_dept@company.com | hr-support@payroll-verify-alert.com | URL Phishing   |
+| Timestamp           | AlertType | Subject                             | Recipient               | SenderFromAddress        |   DomainCheck |    | ThreatType 
+|---------------------|-----------|--------------------------------------|--------------------------|--------------------------------------|----------------|-----------|
+| 2025-06-15 11:14:33 | ALERT     | Urgent: Action Required to Release Salary | finance_dept@company.com | hr-support@payroll-verify-alert.com | @payroll-verify-alert.com  | URL Phishing   |
 
 
 
@@ -164,7 +164,7 @@ Timestamp | Sender | Recipient | AttachmentName | DataTypeDetected | PolicyViola
 DLPLog_CL
 | where DataTypeDetected has_any ("SSN", "Credit Card")  // Look for PII keywords
 | where Recipient !endswith "@company.com"               // Only flag external sending
-| project Timestamp, Sender, Recipient, DataTypeDetected, PolicyViolated
+| project Timestamp, Sender, Recipient, AttachmentName, DataTypeDetected, PolicyViolated
 ```
 
 
@@ -256,7 +256,7 @@ Timestamp | Sender | Recipient | AttachmentName | FileType | ThreatDetected | Ac
 MalwareEmailLog_CL
 | where ThreatDetected != "Clean"                                  // Only show threats
 | where FileType in ("macro-enabled", ".exe", ".scr")              // Filter suspicious file types
-| project Timestamp, Sender, Recipient, AttachmentName, ThreatDetected
+| project Timestamp, Sender, Recipient, AttachmentName, FileType, ThreatDetected, ActionTaken
 ```
 
 
@@ -350,15 +350,15 @@ Timestamp | Sender | Recipient | Subject | Attachment | RuleMatched | ActionTake
 ```kusto
 FirewallEmailLog_CL
 | where ActionTaken in ("Rejected", "Quarantined")           // Look for blocked or quarantined messages
-| project Timestamp, Sender, Subject, Attachment, RuleMatched
+| project Timestamp, Sender, Recipient, Subject, Attachment, RuleMatched, ThreatDetected, ActionTaken
 ```
 
 
 ### 🧪 Dummy Logs (MalwareEmailLog_CL)
 
-| Timestamp           | Sender | Recipient                             | Attachment               | RuleMatched                   | ThreatDetected    | ActionTaken |
+| Timestamp           | Sender | Recipient                             | Subject   | Attachment               | RuleMatched                   | ThreatDetected    | ActionTaken |
 |---------------------|-----------|--------------------------------------|--------------------------|--------------------------------------|----------------|-------------|
-| 2025-06-15 11:14:33 | promotions@freelottery.ru    | emma@company.com | You’ve Won	gift.exe |Block Executables  |  TrojanDownloader | Quarantined  |
+| 2025-06-15 11:14:33 | promotions@freelottery.ru    | emma@company.com | You’ve Won a New Phone	| gift.exe |Block Executables  |  TrojanDownloader | Quarantined  |
 
 
 ### 🎯 MITRE ATT&CK Mapping
