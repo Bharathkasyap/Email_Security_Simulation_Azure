@@ -161,7 +161,8 @@ FirewallEmailLog_CL
 
 </details>
 
-## <details><summary>✅ SCENARIO 5: Email Spoofing and SPF Failures</summary>
+## ✅ SCENARIO 5: Email Spoofing and SPF Failures
+<details><summary>Click to expand</summary>
 
 ### 📖 Context:
 A spoofed exec email fails SPF and is flagged.
