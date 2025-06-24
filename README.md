@@ -1,4 +1,4 @@
-# $${{\color{Orange}\normalsize{\textsf{Email Security Simulation Project}}}}$$
+# $${{\color{Yellow}\normalsize{\textsf{Email Security Simulation Project Case Studies}}}}$$
 
 
 
